@@ -5,9 +5,9 @@ This guide is a continuation of the previous guide [Gentoo base install](./01-ge
 Table of contents:
 
 - [Gentoo base install - recovery](#gentoo-base-install---recovery)
-    - [Recovering pre-cheks](#recovering-pre-cheks)
-      - [Configure boot setup if needed](#configure-boot-setup-if-needed)
-    - [Finalizing the recovery](#finalizing-the-recovery)
+  - [Recovering pre-cheks](#recovering-pre-cheks)
+    - [Configure boot setup if needed](#configure-boot-setup-if-needed)
+  - [Finalizing the recovery](#finalizing-the-recovery)
 
 ---
 
@@ -27,9 +27,9 @@ Get the partition details:
 lsblk -o name,uuid
 ```
 
-- boot - 393A-6EB3
-- luks - b7b50886-85bb-47d8-af23-955f14ff954b
-- root - 0a50c26f-d611-4a63-bf64-5b972bf85502
+- boot - 5666-45E7
+- luks - d23adbd9-4370-469f-8d27-0e16a42b08af
+- root - e9f4b99b-50e2-4ebd-b2d9-25597b3d8675
 
 And setup the mount points:
 
@@ -55,9 +55,7 @@ mount /dev/nvme0n1p1 /boot
 
 mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home /dev/mapper/root /home
 
-mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial /dev/mapper/root /home/celestial
-mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_cache /dev/mapper/root /home/celestial/.cache
-mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_thumbs /dev/mapper/root /home/celestial/.thumbs
+mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_space /dev/mapper/root /home/celestial/space
 mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_space_tmp /dev/mapper/root /home/celestial/space/tmp
 mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_space_workspace /dev/mapper/root /home/celestial/space/workspace
 
@@ -80,7 +78,7 @@ hostonly="yes"
 add_dracutmodules+=" crypt "
 filesystems+=" btrfs "
 force_drivers+=" amdgpu "
-kernel_cmdline="rd.retry=10 rd.luks.allow-discards rd.luks.uuid=b7b50886-85bb-47d8-af23-955f14ff954b rd.luks.name=b7b50886-85bb-47d8-af23-955f14ff954b=root rootfstype=btrfs rootflags=subvol=@"
+kernel_cmdline="rd.retry=10 rd.luks.allow-discards rd.luks.uuid=d23adbd9-4370-469f-8d27-0e16a42b08af rd.luks.name=d23adbd9-4370-469f-8d27-0e16a42b08af=root rootfstype=btrfs rootflags=subvol=@"
 EOF
 
 #nano /etc/dracut.conf.d/override.conf

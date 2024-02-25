@@ -11,23 +11,23 @@ The `gentoo-kernel-bin` is a precompiled kernel that we can use to get the list 
 Table of contents:
 
 - [Gentoo base install](#gentoo-base-install)
-    - [Installation pre-cheks](#installation-pre-cheks)
-      - [Partition disks](#partition-disks)
-        - [Partition scheme](#partition-scheme)
-      - [Encrypt root](#encrypt-root)
-      - [Create filesystem](#create-filesystem)
-      - [Get partition details](#get-partition-details)
-    - [Install stage 3](#install-stage-3)
-      - [Configure `make.conf`](#configure-makeconf)
-    - [Chroot into system](#chroot-into-system)
-      - [Update Gentoo](#update-gentoo)
-      - [Configure _fstab_](#configure-fstab)
-    - [Installing dependencies](#installing-dependencies)
-      - [Dracut with numlock _(optional)_](#dracut-with-numlock-optional)
-      - [Boot configuration check](#boot-configuration-check)
-      - [Configuring the system](#configuring-the-system)
-    - [Finalizing the installation](#finalizing-the-installation)
-    - [Sources:](#sources)
+  - [Installation pre-cheks](#installation-pre-cheks)
+    - [Partition disks](#partition-disks)
+      - [Partition scheme](#partition-scheme)
+    - [Encrypt root](#encrypt-root)
+    - [Create filesystem](#create-filesystem)
+    - [Get partition details](#get-partition-details)
+  - [Install stage 3](#install-stage-3)
+    - [Configure `make.conf`](#configure-makeconf)
+  - [Chroot into system](#chroot-into-system)
+    - [Update Gentoo](#update-gentoo)
+    - [Configure _fstab_](#configure-fstab)
+  - [Installing dependencies](#installing-dependencies)
+    - [Dracut with numlock _(optional)_](#dracut-with-numlock-optional)
+    - [Boot configuration check](#boot-configuration-check)
+    - [Configuring the system](#configuring-the-system)
+  - [Finalizing the installation](#finalizing-the-installation)
+  - [Sources:](#sources)
 
 ---
 
@@ -108,9 +108,7 @@ mount /dev/mapper/root /mnt/gentoo
 btrfs subvolume create /mnt/gentoo/@
 
 btrfs subvolume create /mnt/gentoo/@home
-btrfs subvolume create /mnt/gentoo/@home_celestial
-btrfs subvolume create /mnt/gentoo/@home_celestial_cache
-btrfs subvolume create /mnt/gentoo/@home_celestial_thumbs
+btrfs subvolume create /mnt/gentoo/@home_celestial_space
 btrfs subvolume create /mnt/gentoo/@home_celestial_space_tmp
 btrfs subvolume create /mnt/gentoo/@home_celestial_space_workspace
 
@@ -137,9 +135,9 @@ Get UUID for the boot partition on the dev `nvme0n1p1` and for the root file sys
 lsblk -o name,uuid
 ```
 
-- boot - 393A-6EB3
-- luks - b7b50886-85bb-47d8-af23-955f14ff954b
-- root - 0a50c26f-d611-4a63-bf64-5b972bf85502
+- boot - 5666-45E7
+- luks - d23adbd9-4370-469f-8d27-0e16a42b08af
+- root - e9f4b99b-50e2-4ebd-b2d9-25597b3d8675
 
 ---
 
@@ -249,12 +247,8 @@ mount /dev/nvme0n1p1 /boot
 
 mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home /dev/mapper/root /home
 
-mkdir -p /home/celestial
-mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial /dev/mapper/root /home/celestial
-mkdir -p /home/celestial/.cache
-mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_cache /dev/mapper/root /home/celestial/.cache
-mkdir -p /home/celestial/.thumbs
-mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_thumbs /dev/mapper/root /home/celestial/.thumbs
+mkdir -p /home/celestial/space
+mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_space /dev/mapper/root /home/celestial/space
 mkdir -p /home/celestial/space/tmp
 mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@home_celestial_space_tmp /dev/mapper/root /home/celestial/space/tmp
 mkdir -p /home/celestial/space/workspace
@@ -321,27 +315,25 @@ cat << EOF > /etc/fstab
 # <fs>                                      <mountpoint>            <type>  <opts> <dump> <pass>
 
 # boot partition
-UUID=393A-6EB3                              /boot                             vfat    noatime 0 1
+UUID=5666-45E7                              /boot                             vfat    noatime 0 1
 
 # static file system
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /                                 btrfs   compress-force=zstd:1,noatime,subvol=@ 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /                                 btrfs   compress-force=zstd:1,noatime,subvol=@ 0 0
 
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /home                             btrfs   compress-force=zstd:1,noatime,subvol=@home 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /home/celestial                   btrfs   compress-force=zstd:1,noatime,subvol=@home_celestial 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /home/celestial/.cache            btrfs   compress-force=zstd:1,noatime,subvol=@home_celestial_cache 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /home/celestial/.thumbs           btrfs   compress-force=zstd:1,noatime,subvol=@home_celestial_thumbs 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /home/celestial/space/tmp         btrfs   compress-force=zstd:1,noatime,subvol=@home_celestial_space_tmp 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /home/celestial/space/workspace   btrfs   compress-force=zstd:1,noatime,subvol=@home_celestial_space_workspace 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /home                             btrfs   compress-force=zstd:1,noatime,subvol=@home 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /home/celestial/space             btrfs   compress-force=zstd:1,noatime,subvol=@home_celestial_space 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /home/celestial/space/tmp         btrfs   compress-force=zstd:1,noatime,subvol=@home_celestial_space_tmp 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /home/celestial/space/workspace   btrfs   compress-force=zstd:1,noatime,subvol=@home_celestial_space_workspace 0 0
 
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /media                            btrfs   compress-force=zstd:1,noatime,subvol=@media 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /mnt                              btrfs   compress-force=zstd:1,noatime,subvol=@mnt 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /root                             btrfs   compress-force=zstd:1,noatime,subvol=@root 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /tmp                              btrfs   compress-force=zstd:1,noatime,subvol=@tmp 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /media                            btrfs   compress-force=zstd:1,noatime,subvol=@media 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /mnt                              btrfs   compress-force=zstd:1,noatime,subvol=@mnt 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /root                             btrfs   compress-force=zstd:1,noatime,subvol=@root 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /tmp                              btrfs   compress-force=zstd:1,noatime,subvol=@tmp 0 0
 
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /var/cache                        btrfs   compress-force=zstd:1,noatime,subvol=@var_cache 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /var/crash                        btrfs   compress-force=zstd:1,noatime,subvol=@var_crash 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /var/log                          btrfs   compress-force=zstd:1,noatime,subvol=@var_log 0 0
-UUID=0a50c26f-d611-4a63-bf64-5b972bf85502   /var/tmp                          btrfs   compress-force=zstd:1,noatime,subvol=@var_tmp 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /var/cache                        btrfs   compress-force=zstd:1,noatime,subvol=@var_cache 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /var/crash                        btrfs   compress-force=zstd:1,noatime,subvol=@var_crash 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /var/log                          btrfs   compress-force=zstd:1,noatime,subvol=@var_log 0 0
+UUID=e9f4b99b-50e2-4ebd-b2d9-25597b3d8675   /var/tmp                          btrfs   compress-force=zstd:1,noatime,subvol=@var_tmp 0 0
 
 # tmps
 tmpfs                                       /run                              tmpfs   size=128M 0 0
@@ -366,7 +358,7 @@ hostonly="yes"
 add_dracutmodules+=" crypt "
 filesystems+=" btrfs "
 force_drivers+=" amdgpu "
-kernel_cmdline="rd.retry=10 rd.luks.allow-discards rd.luks.uuid=b7b50886-85bb-47d8-af23-955f14ff954b rd.luks.name=b7b50886-85bb-47d8-af23-955f14ff954b=root rootfstype=btrfs rootflags=subvol=@"
+kernel_cmdline="rd.retry=10 rd.luks.allow-discards rd.luks.uuid=d23adbd9-4370-469f-8d27-0e16a42b08af rd.luks.name=d23adbd9-4370-469f-8d27-0e16a42b08af=root rootfstype=btrfs rootflags=subvol=@"
 EOF
 
 #dracut --force --kver 6.6.13-gentoo-dist
