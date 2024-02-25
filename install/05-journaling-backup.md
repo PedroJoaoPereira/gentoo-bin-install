@@ -5,7 +5,7 @@ Guide on how to setup journaling for easily rolling back versioned snapshots of 
 Table of contents:
 
 - [Journaling with BTRFS and backup system _(optional)_](#journaling-with-btrfs-and-backup-system-optional)
-    - [Configuration](#configuration)
+  - [Configuration](#configuration)
 
 ---
 
@@ -20,13 +20,13 @@ rc-service dbus start
 rc-update add dbus default
 
 snapper --config root create-config /
-snapper --config home create-config /home/celestial
+snapper --config home create-config /home/celestial/space
 
 snapper -c root set-config ALLOW_USERS=${LOGNAME} SYNC_ACL=yes
 snapper -c home set-config ALLOW_USERS=${LOGNAME} SYNC_ACL=yes
 
 chown -R :${LOGNAME} /.snapshots
-chown -R :${LOGNAME} /home/celestial/.snapshots
+chown -R :${LOGNAME} /home/celestial/space/.snapshots
 
 mkdir -p /etc/borg
 cat << EOF > /etc/borg/exclude.conf
@@ -37,11 +37,7 @@ sh:/proc/*
 sh:/run/*
 sh:/sys/*
 
-sh:/home/celestial/.snapshots/*
-sh:/home/celestial/.cache/*
-sh:/home/celestial/.thumbs/*
-sh:/home/celestial/space/tmp/*
-sh:/home/celestial/space/workspace/*
+sh:/home/*
 
 sh:/.snapshots/*
 sh:/media/*
