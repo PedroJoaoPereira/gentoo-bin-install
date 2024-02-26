@@ -5,9 +5,9 @@ This guide is a continuation of the previous guide [Gentoo base install](./01-ge
 Table of contents:
 
 - [Gentoo base install - recovery](#gentoo-base-install---recovery)
-  - [Recovering pre-cheks](#recovering-pre-cheks)
-    - [Configure boot setup if needed](#configure-boot-setup-if-needed)
-  - [Finalizing the recovery](#finalizing-the-recovery)
+    - [Recovering pre-cheks](#recovering-pre-cheks)
+      - [Configure boot setup if needed](#configure-boot-setup-if-needed)
+    - [Finalizing the recovery](#finalizing-the-recovery)
 
 ---
 
@@ -73,7 +73,7 @@ mount -t btrfs -o compress-force=zstd:1,noatime,subvol=@var_tmp /dev/mapper/root
 #### Configure boot setup if needed
 
 ```bash
-cat << EOF > /etc/dracut.conf.d/luks.conf
+cat << EOF > /etc/dracut.conf.d/override.conf
 hostonly="yes"
 add_dracutmodules+=" crypt "
 filesystems+=" btrfs "
@@ -97,7 +97,7 @@ exit
 cd
 
 umount -l /mnt/gentoo/dev{/shm,/pts,}
-umount /dev/nvme0n1p2
+umount /dev/nvme0n1p1
 umount -R /mnt/gentoo
 
 reboot

@@ -11,23 +11,22 @@ The `gentoo-kernel-bin` is a precompiled kernel that we can use to get the list 
 Table of contents:
 
 - [Gentoo base install](#gentoo-base-install)
-  - [Installation pre-cheks](#installation-pre-cheks)
-    - [Partition disks](#partition-disks)
-      - [Partition scheme](#partition-scheme)
-    - [Encrypt root](#encrypt-root)
-    - [Create filesystem](#create-filesystem)
-    - [Get partition details](#get-partition-details)
-  - [Install stage 3](#install-stage-3)
-    - [Configure `make.conf`](#configure-makeconf)
-  - [Chroot into system](#chroot-into-system)
-    - [Update Gentoo](#update-gentoo)
-    - [Configure _fstab_](#configure-fstab)
-  - [Installing dependencies](#installing-dependencies)
-    - [Dracut with numlock _(optional)_](#dracut-with-numlock-optional)
-    - [Boot configuration check](#boot-configuration-check)
-    - [Configuring the system](#configuring-the-system)
-  - [Finalizing the installation](#finalizing-the-installation)
-  - [Sources:](#sources)
+    - [Installation pre-cheks](#installation-pre-cheks)
+      - [Partition disks](#partition-disks)
+        - [Partition scheme](#partition-scheme)
+      - [Encrypt root](#encrypt-root)
+      - [Create filesystem](#create-filesystem)
+      - [Get partition details](#get-partition-details)
+    - [Install stage 3](#install-stage-3)
+      - [Configure `make.conf`](#configure-makeconf)
+    - [Chroot into system](#chroot-into-system)
+      - [Update Gentoo](#update-gentoo)
+      - [Configure _fstab_](#configure-fstab)
+    - [Installing dependencies](#installing-dependencies)
+      - [Dracut with numlock _(optional)_](#dracut-with-numlock-optional)
+      - [Boot configuration check](#boot-configuration-check)
+      - [Configuring the system](#configuring-the-system)
+    - [Finalizing the installation](#finalizing-the-installation)
 
 ---
 
@@ -392,8 +391,15 @@ If you want to have the numlock enabled at boot, you can add the `numlock` servi
 
 ```bash
 mkdir -p /usr/lib/dracut/modules.d/51numlock/
+```
 
-cat << EOF > /usr/lib/dracut/modules.d/51numlock/enable-numlock.sh
+Edit the file `enable-numlock.sh` with the following content:
+
+```bash
+nano /usr/lib/dracut/modules.d/51numlock/enable-numlock.sh
+```
+
+```bash
 #!/bin/bash
 if [ -x /usr/bin/setleds ] ; then
    INITTY=/dev/tty[1-8]
@@ -401,9 +407,15 @@ if [ -x /usr/bin/setleds ] ; then
        setleds -D +num < $tty
    done
 fi
-EOF
+```
 
-cat << EOF > /usr/lib/dracut/modules.d/51numlock/module-setup.sh
+Edit the file `module-setup.sh` with the following content:
+
+```bash
+nano /usr/lib/dracut/modules.d/51numlock/module-setup.sh
+```
+
+```bash
 #!/bin/bash
 # This file is part of dracut.
 # SPDX-License-Identifier: GPL-2.0-or-later
@@ -432,7 +444,6 @@ install() {
     inst /usr/bin/setleds
     inst_hook cmdline 99 "$moddir/enable-numlock.sh"
 }
-EOF
 ```
 
 #### Boot configuration check

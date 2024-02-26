@@ -2,7 +2,7 @@
 
 This guide allows us to install Hyprland using the official portage tree and without display managers.
 
-Update the `USE` flags in `/etc/portage/make.conf` to contain `elogind wayland -X` and update the system:
+Update the `USE` flags in `/etc/portage/make.conf` to contain `dbus elogind wayland -X` and update the system:
 
 ```bash
 doas emerge -uUDNav @world

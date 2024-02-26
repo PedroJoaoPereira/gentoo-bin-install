@@ -64,18 +64,14 @@ To open the LUKS partition with the keyfile:
 
 ```bash
 cryptsetup luksClose rootbak
-```
 
-```bash
 cryptsetup luksOpen /dev/sda1 rootbak --key-file /etc/keys/rootbak.key
-```
 
-```bash
 lsblk -o name,uuid
 ```
 
-- luksbak - 36a524c1-3312-4a65-b565-5db916f53ae5
-- rootbak - 6be59466-94a1-45cb-a8dc-a038a1138a7c
+- luksbak - 19ea7f4f-25a7-4f2c-80df-2a7a5826046d
+- rootbak - 54cd633d-0e6b-474d-9a62-de76613b686a
 
 ---
 
@@ -92,7 +88,7 @@ Add the following content to the file:
 ```bash
 # /mnt/backup with regular keyfile (from /dev/mapper/rootbak)
 target=rootbak
-source=UUID="36a524c1-3312-4a65-b565-5db916f53ae5"
+source=UUID="19ea7f4f-25a7-4f2c-80df-2a7a5826046d"
 key=/etc/keys/rootbak.key
 
 # An empty line is important at the end of the file
@@ -103,7 +99,7 @@ Mount the encrypted disk at boot with `fstab`:
 ```bash
 cat << EOF >> /etc/fstab
 # encrypted backup disk
-UUID=6be59466-94a1-45cb-a8dc-a038a1138a7c   /mnt/backup                       ext4    defaults 0 0
+UUID=54cd633d-0e6b-474d-9a62-de76613b686a   /mnt/backup                       ext4    defaults 0 0
 
 EOF
 

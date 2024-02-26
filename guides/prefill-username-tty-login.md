@@ -12,4 +12,16 @@ c2...
 #c6...
 ```
 
+And edit `/etc/login.defs` to remove timeout for TTYs:
+
+```bash
+nano /etc/login.defs
+```
+
+```bash
+...
+LOGIN_TIMEOUT       0
+...
+```
+
 The commented out TTYs are just to save on a bit of RAM as I will rarely use them.
